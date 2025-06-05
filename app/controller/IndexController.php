@@ -67,14 +67,16 @@ class IndexController
         // 拼接分页url，保留所有参数
         $params = $request->get();
         $params['page'] = '(:num)';
-        $pageUrl = '/app/acms/list?' . http_build_query($params);
-
+        //http_build_query会自动编码，导致Paginator找不到(:num)
+        $pageUrl = '/app/acms/list?' . urldecode(http_build_query($params));
         $paginator = new \JasonGrimes\Paginator(
             $articles->total(),
             $limit,
             $page,
             $pageUrl
         );
+        $paginator->setPreviousText('上一页');
+        $paginator->setNextText('下一页');
 
         $categories = Category::where('status', 1)
             ->orderBy('sort', 'desc')
